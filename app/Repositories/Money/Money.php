@@ -3,6 +3,7 @@ namespace  App\Repositories\Money;
 
 use App\Models\Setting;
 use App\Repositories\Currency\Currency;
+use App\Constantes\Constante;
 
 class Money
 {
@@ -39,6 +40,6 @@ class Money
 
     public function getBigDecimalAmount()
     {
-        return $this->getAmount() / 100;
+        return $this->getAmount() / Constante::MULTIPLY;
     }
 }

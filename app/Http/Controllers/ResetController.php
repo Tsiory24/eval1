@@ -16,12 +16,12 @@ use Illuminate\Support\Facades\Auth;
         }
 
         public function resetDatabase():JsonResponse{
-            $currentUser = Auth::user();
-            if($currentUser->hasRole(Role::OWNER_ROLE)){
+            //$currentUser = Auth::user();
+            //f($currentUser->hasRole(Role::OWNER_ROLE)){
                 $this->resetDatabase->resetDatabase();
                 return response()->json(["Message" => "La base de donnee a ete reinitialise"]);
-            }
-            return response()->json(['Message' => "Seuls les administrateurs peuvent reinitialiser la base de donnee"]);
+            //}
+            //return response()->json(['Message' => "Seuls les administrateurs peuvent reinitialiser la base de donnee"]);
 
         }
 

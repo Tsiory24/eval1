@@ -1,0 +1,125 @@
+docker compose up -d --build
+docker compose exec php composer install
+docker compose exec php php artisan migrate --seed
+docker compose exec --user root php bash
+apt-get update && apt-get install -y npm
+docker compose exec php npm install
+docker compose exec php npm run dev 
+
+docker compose down
+docker compose up -d 
+
+
+
+sudo lsof -i :3306
+
+sudo kill (PID)
+systemctl status haproxy
+
+sudo systemctl stop haproxy
+
+
+supprimer cache apres modification route:
+    php artisan route:clear
+    php artisan cache:clear
+    php artisan config:clear
+    composer dump-autoload
+
+
+insertion de donnees dummy:
+php artisan migrate:fresh --seed && php artisan db:seed --class=DummyDatabaseSeeder
+
+
+
+dans phpMain:
+composer require maatwebsite/excel
+
+
+lire csvFile:
+use League\Csv\Reader;
+use Illuminate\Support\Facades\Storage;
+
+public function readCsvFile($file)
+{
+    // Lire le fichier CSV depuis le stockage
+    $csvContent = Storage::get($file);
+
+    // Charger le contenu du fichier CSV en mémoire
+    $csv = Reader::createFromString($csvContent);
+    $csv->setHeaderOffset(0); // Utiliser la première ligne comme en-tête
+
+    // Convertir le CSV en tableau associatif
+    $records = [];
+    foreach ($csv as $record) {
+        $records[] = $record;
+    }
+
+    return $records;
+}
+
+
+manipuler csvFile:
+$csvData = $this->readCsvFile('users.csv');
+
+// Exemple : accéder à la colonne "email"
+foreach ($csvData as $row) {
+    echo "Email: " . $row['email'] . "\n";
+}
+
+// Exemple : stocker les utilisateurs dans la base
+foreach ($csvData as $row) {
+    User::create([
+        'name' => $row['name'],
+        'email' => $row['email'],
+        'password' => bcrypt($row['password']),
+    ]);
+}
+
+Manipuler les données par colonne
+
+Une fois que tu as ton fichier chargé en tant que tableau associatif, tu peux manipuler chaque colonne facilement.
+
+$csvData = $this->readCsvFile('users.csv');
+
+// Exemple : accéder à la colonne "email"
+foreach ($csvData as $row) {
+    echo "Email: " . $row['email'] . "\n";
+}
+
+// Exemple : stocker les utilisateurs dans la base
+foreach ($csvData as $row) {
+    User::create([
+        'name' => $row['name'],
+        'email' => $row['email'],
+        'password' => bcrypt($row['password']),
+    ]);
+}
+
+3️⃣ Importer un fichier CSV via un Upload
+
+Si tu veux gérer un fichier CSV via un formulaire, crée un endpoint Laravel :
+
+use Illuminate\Http\Request;
+
+public function importCsv(Request $request)
+{
+    $file = $request->file('csv_file');
+
+    // Vérifier que le fichier est bien un CSV
+    if ($file->getClientOriginalExtension() !== 'csv') {
+        return response()->json(['error' => 'Format invalide.'], 400);
+    }
+
+    // Lire et traiter le CSV
+    $csvData = $this->readCsvFile($file->getPathname());
+
+    return response()->json($csvData);
+}
+
+📌 Appelle cette route avec un formulaire HTML :
+
+<form action="/import-csv" method="POST" enctype="multipart/form-data">
+    @csrf
+    <input type="file" name="csv_file">
+    <button type="submit">Importer</button>
+</form>
