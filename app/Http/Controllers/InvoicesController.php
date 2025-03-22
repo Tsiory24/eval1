@@ -30,6 +30,7 @@ use App\Models\Offer;
 use App\Models\Product;
 use App\Services\InvoiceNumber\InvoiceNumberService;
 use Illuminate\Support\Facades\Validator;
+use App\Constantes\Constante;
 
 class InvoicesController extends Controller
 {
@@ -165,7 +166,7 @@ class InvoicesController extends Controller
                 'comment' => $request->comment,
                 'quantity' => $request->quantity,
                 'type' => $request->type,
-                'price' => $request->price * 100,
+                'price' => $request->price * Constante::MULTIPLY,
                 'invoice_id' => $invoice->id,
                 'product_id' => $product
             ]);
