@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+use App\Constantes\Constante;
 
 class PaymentsController extends Controller
 {
@@ -56,7 +57,7 @@ class PaymentsController extends Controller
 
         $payment = Payment::create([
             'external_id' => Uuid::uuid4()->toString(),
-            'amount' => $request->amount * 100,
+            'amount' => $request->amount * Constante::MULTIPLY,
             'payment_date' => Carbon::parse($request->payment_date),
             'payment_source' => $request->source,
             'description' => $request->description,

@@ -11,6 +11,7 @@ use App\Models\InvoiceLine;
 use App\Enums\InvoiceStatus;
 use App\Services\InvoiceNumber\InvoiceNumberService;
 use Illuminate\Http\Request;
+use App\Constantes\Constante;
 
 class OffersController extends Controller
 {
@@ -34,7 +35,7 @@ class OffersController extends Controller
                 'type' => $line["type"],
                 'quantity' => $line["quantity"] ?: 1,
                 'comment' => $line["comment"],
-                'price' => $line["price"] * 100,
+                'price' => $line["price"] * Constante::MULTIPLY,
                 'product_id' => $line["product"] ? Product::whereExternalId($line["product"])->first()->id : null
             ]);
             $offer->invoiceLines()->save($invoiceLine);
@@ -62,7 +63,7 @@ class OffersController extends Controller
                 'type' => $line["type"],
                 'quantity' => $line["quantity"] ?: 1,
                 'comment' => $line["comment"],
-                'price' => $line["price"] * 100,
+                'price' => $line["price"]  * Constante::MULTIPLY,
                 'product_id' => $line["product"] ? Product::whereExternalId($line["product"])->first()->id : null
             ]);
             $offer->invoiceLines()->save($invoiceLine);

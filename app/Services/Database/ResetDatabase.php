@@ -1,29 +1,59 @@
 <?php
 
 namespace App\Services\Database;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Schema;
 
 use Illuminate\Support\Facades\DB;
 
     class ResetDatabase{
-        public function resetDatabase(){
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        protected $excludedTables = [
+            'business_hours',
+            'departments',
+            'industries',
+            'migrations',
+            'permissions',
+            'permission_role',
+            'role_user',
+            'roles',
+            'settings',
+            'statuses'
+        ];
+        public function resetDatabase()
+        {
+            $superUser = Auth::user();
 
-            $tablesExclues = ["migrations", "users", "roles", "role_user", "industries", "departments", "settings", "permissions", "business_hours", "permission_role", "statuses", "department_user"];
-
-            $tables = DB::select("SHOW TABLES;");
-
-            $databaseName = env('DB_DATABASE');
-
-            $key = "Tables_in_{$databaseName}";
-
-            foreach ($tables as $table) {
-                $tableName = $table->$key;
-                if (!in_array($tableName, $tablesExclues)) {
-                    DB::table($tableName)->truncate();
-                }
+            if (!$superUser || (!$superUser->hasRole('administrator') && !$superUser->hasRole('owner'))) {
+                return response()->json(['Message' => "Seuls les administrateurs peuvent reinitialiser la base de donnee"]);
             }
 
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            $adminId = $superUser->id;
+
+            try {
+                // Désactiver les contraintes de clés étrangères
+                Schema::disableForeignKeyConstraints();
+
+                $tables = DB::select('SHOW TABLES');
+                $tables = array_map('current', $tables);
+
+                foreach ($tables as $table) {
+                    if ($table === 'users') {
+                        DB::table($table)->where('id', '!=', $adminId)->delete();
+                    } elseif ($table === 'department_user' || $table === 'role_user') {
+                        DB::table($table)->where('user_id', '!=', $adminId)->delete();
+                    } elseif (!in_array($table, $this->excludedTables)) {
+                        DB::table($table)->truncate();
+                    }
+                }
+
+                // Réactiver les contraintes de clés étrangères
+                Schema::enableForeignKeyConstraints();
+
+                return response()->json(["Message" => "La base de donnee a ete reinitialise"]);
+            } catch (\Exception $e) {
+                return response()->json(["Message" => $e->getMessage(),"status" => "error"]);
+            }
         }
     }
 
