@@ -12,6 +12,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 use App\Constantes\Constante;
+use App\Services\Invoice\InvoiceCalculator;
 
 class PaymentsController extends Controller
 {
@@ -53,6 +54,13 @@ class PaymentsController extends Controller
         if (!$invoice->isSent()) {
             session()->flash('flash_message_warning', __("Can't add payment on Invoice"));
             return redirect()->route('invoices.show', $invoice->external_id);
+        }
+
+        //verification prix
+        $invoiceCalculator = new InvoiceCalculator($invoice);
+        if($invoiceCalculator->getAmountDue()->getAmount() < $request->amount * Constante::MULTIPLY){
+            session()->flash('flash_message_warning', __("Le montant du paiement est superieur au montant du restant"));
+            return redirect()->route( 'invoices.show', $invoice->external_id);
         }
 
         $payment = Payment::create([
