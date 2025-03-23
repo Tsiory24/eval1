@@ -51,6 +51,8 @@
             <p class=" list-group-item siderbar-top" title=""><img src="{{url('images/daybyday-logo-white.png')}}" alt="" style="width: 100%; margin: 1em 0;"></p>
             <a href="{{route('dashboard')}}" class=" list-group-item" data-parent="#MainMenu"><i
                         class="fa fa-home sidebar-icon"></i><span id="menu-txt">{{ __('Dashboard') }} </span></a>
+            <a href="{{route('importCsv.sendForm')}}" class=" list-group-item" data-parent="#MainMenu"><i
+                class="fa fa-home sidebar-icon"></i><span id="menu-txt">{{ __('Import CSV') }} </span></a>
             <a href="{{route('reset.data')}}" class=" list-group-item" data-parent="#MainMenu"><i
                         class="fa fa-home sidebar-icon"></i><span id="menu-txt">{{ __('Reset Database') }} </span></a>
             <a href="{{route('users.show', \Auth::user()->external_id)}}" class=" list-group-item"

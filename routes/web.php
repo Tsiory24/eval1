@@ -9,6 +9,7 @@
 | to using a Closure or controller method. Build something great!
 |
 */
+use App\Http\Controllers\ImportController;
 Route::auth();
 Route::get('/logout', 'Auth\LoginController@logout');
 Route::group(['middleware' => ['auth']], function () {
@@ -233,6 +234,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'reset'], function () {
         Route::get('/', 'ResetController@resetDatabase')->name('reset.data');
     });
+    Route::group(['prefix' => 'importCsv'], function () {
+        Route::get('/sendForm', [ImportController::class, 'sendForm'])->name('importCsv.sendForm');
+        Route::post('/upload', [ImportController::class, 'upload'])->name('importCsv.upload');
+    });
+    
 });
 
 Route::group(['middleware' => ['auth']], function () {
