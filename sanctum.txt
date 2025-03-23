@@ -1,0 +1,58 @@
+composer require laravel/sanctum
+
+
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+Cela créera le fichier config/sanctum.php
+
+
+
+3. Ajouter la migration et exécuter les migrations
+Sanctum utilise une table personal_access_tokens pour stocker les tokens. Exécutez la migration :
+php artisan migrate
+
+
+Dans app/Http/Kernel.php, ajoutez le middleware EnsureFrontendRequestsAreStateful dans le groupe api :
+  use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+
+protected $middlewareGroups = [
+    'api' => [
+        EnsureFrontendRequestsAreStateful::class,
+        'throttle:api',
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
+];
+
+
+5. Configurer le modèle User
+Dans app/Models/User.php (ou app/User.php selon la structure de votre projet), ajoutez le trait HasApiTokens :
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use HasApiTokens, Notifiable;
+}
+
+
+6. Configurer le guard d'authentification (si nécessaire)
+Dans config/auth.php, assurez-vous que le guard api utilise sanctum :
+'guards' => [
+    'api' => [
+        'driver' => 'sanctum',
+        'provider' => 'users',
+    ],
+],
+
+
+
+
+
+
+
+
+
+composer dump-autoload
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
