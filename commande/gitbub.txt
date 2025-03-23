@@ -13,3 +13,8 @@ git push -u origin dev
 
 
 git checkout -b update-price-constante
+
+
+pour ecraser le code actuel avec le branch main
+git fetch origin
+git reset --hard origin/main
