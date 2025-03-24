@@ -97,5 +97,16 @@ class PaymentApiController extends Controller
     }
 }
 
+  
+public function payments(){
+    $payements = Payment::all();
+    return ResponseUtil::responseStandard(
+        'success',
+        [
+            'payements' => $payements,
+        ]
+    );
+}
+
 
 }

@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use App\Http\Controllers\api\AuthApiController;
 use App\Http\Controllers\api\DashBoardApiController;
+use App\Http\Controllers\api\InvoiceApiController;
+use App\Http\Controllers\api\OfferApiController;
 use App\Http\Controllers\api\PaymentApiController;
 use App\Http\Controllers\api\SettingsApiController;
 
@@ -29,16 +31,22 @@ Route::group(['prefix' => 'authentification'], function () {
 });
 Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/', [DashBoardApiController::class, 'dashboard'])->name('api.dashborad');
-    Route::get('/offers', [DashBoardApiController::class, 'offers'])->name('api.offers');
-    Route::get('/invoices', [DashBoardApiController::class, 'invoices'])->name('api.invoices');
     Route::get('/aPayer', [DashBoardApiController::class, 'aPayer'])->name('api.aPayer');
-    Route::get('/detailsSommePrixInvoices', [DashBoardApiController::class, 'detailsSommePrixInvoices'])->name('api.detailsSommePrixInvoices');
+});
+
+Route::group(['prefix' => 'offers'], function () {
+    Route::get('/', [OfferApiController::class, 'offers'])->name('api.offers');
+});
+
+Route::group(['prefix' => 'invoices'], function () {
+    Route::get('/', [InvoiceApiController::class, 'invoices'])->name('api.invoices');
+    Route::get('/detailsSommePrixInvoices', [InvoiceApiController::class, 'detailsSommePrixInvoices'])->name('api.detailsSommePrixInvoices');
 });
 
 Route::group(['prefix' => 'payment'], function () {
     Route::post('/update', [PaymentApiController::class, 'updatePayment'])->name('api.updatePayment');
     Route::post('/delete', [PaymentApiController::class, 'deletePayment'])->name('api.deletePayment');
-    Route::get('/payments', [DashBoardApiController::class, 'payments'])->name('api.payments');
+    Route::get('/payments', [PaymentApiController::class, 'payments'])->name('api.payments');
 });
 
 Route::group(['prefix' => 'settings'], function () {
