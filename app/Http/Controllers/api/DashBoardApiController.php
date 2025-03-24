@@ -37,8 +37,10 @@ class DashBoardApiController extends Controller
                     SELECT 10 UNION ALL 
                     SELECT 11 UNION ALL 
                     SELECT 12) AS months
-                LEFT JOIN payments p ON MONTH(p.payment_date) = months.month 
-                AND YEAR(p.payment_date) = :year
+                LEFT JOIN payments p 
+                    ON MONTH(p.payment_date) = months.month 
+                    AND YEAR(p.payment_date) = :year
+                    AND p.deleted_at IS NULL
                 GROUP BY months.month
                 ORDER BY months.month
             '),
@@ -46,6 +48,7 @@ class DashBoardApiController extends Controller
         );
         return $paymentsByMonth;
     }
+
 
     public function nombreParTypePayment($year)
     {
@@ -98,6 +101,8 @@ class DashBoardApiController extends Controller
                     SUM(amount) AS total_amount
                 FROM 
                     payments
+                where 
+                    deleted_at is null
                 GROUP BY 
                     YEAR(payment_date)
                 ORDER BY 
@@ -179,53 +184,7 @@ class DashBoardApiController extends Controller
         );
     }
 
-    public function offers()
-    {
-        $offers = Offer::with('client:id,company_name')->get();
-
-        return ResponseUtil::responseStandard(
-            'success',
-            [
-                'offers' => $offers,
-            ]
-        );
-    }
-
-    public function invoices()
-    {
-        $invoices = DB::select("
-            SELECT 
-                i.id, 
-                i.external_id, 
-                i.status, 
-                i.invoice_number, 
-                i.sent_at, 
-                i.due_at, 
-                i.client_id, 
-                c.company_name, 
-                COALESCE(SUM(il.price * il.quantity), 0) AS total_amount
-            FROM invoices i
-            LEFT JOIN clients c ON i.client_id = c.id
-            LEFT JOIN invoice_lines il ON i.id = il.invoice_id
-            GROUP BY i.id, c.company_name
-        ");
-    
-        return ResponseUtil::responseStandard(
-            'success',
-            [
-                'invoices' => $invoices,
-            ]
-        );
-    }
-    public function payments(){
-        $payements = Payment::all();
-        return ResponseUtil::responseStandard(
-            'success',
-            [
-                'payements' => $payements,
-            ]
-        );
-    }
+  
     public function aPayer(){
         $invoicelines = InvoiceLine::whereNotNull('invoice_id')->get();
         $payments = Payment::all();
@@ -234,15 +193,6 @@ class DashBoardApiController extends Controller
             [
                 'invoicelines' => $invoicelines,
                 'payments' => $payments,
-            ]
-        );
-    }
-    public function detailsSommePrixInvoices(){
-        $detailsSommePrixInvoices = InvoiceLine::whereNotNull('invoice_id')->with('invoice')->get();
-        return ResponseUtil::responseStandard(
-            'success',
-            [
-                'detailsSommePrixInvoices' => $detailsSommePrixInvoices,
             ]
         );
     }
