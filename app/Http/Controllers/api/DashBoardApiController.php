@@ -22,7 +22,7 @@ class DashBoardApiController extends Controller
         $paymentsByMonth = DB::select(
             DB::raw('
                 SELECT 
-                    months.month, 
+                    months.month,
                     COALESCE(SUM(p.amount), 0) AS total_amount
                 FROM 
                     (SELECT 1 AS month UNION ALL 
@@ -168,7 +168,6 @@ class DashBoardApiController extends Controller
             [
                 'offers_count' => $offersCount,
                 'invoices_count' => $invoicesCount,
-                
                 'total_amount_invoice' => $totalAmountInvoice,
                 'sum_payment' => $sumPayement,
                 'sum_payment_due' => $sumPayementDue,
@@ -180,8 +179,10 @@ class DashBoardApiController extends Controller
         );
     }
 
-    public function offers(){
-        $offers = Offer::all();
+    public function offers()
+    {
+        $offers = Offer::with('client:id,company_name')->get();
+
         return ResponseUtil::responseStandard(
             'success',
             [
@@ -189,8 +190,26 @@ class DashBoardApiController extends Controller
             ]
         );
     }
-    public function invoices(){
-        $invoices = Invoice::all();
+
+    public function invoices()
+    {
+        $invoices = DB::select("
+            SELECT 
+                i.id, 
+                i.external_id, 
+                i.status, 
+                i.invoice_number, 
+                i.sent_at, 
+                i.due_at, 
+                i.client_id, 
+                c.company_name, 
+                COALESCE(SUM(il.price * il.quantity), 0) AS total_amount
+            FROM invoices i
+            LEFT JOIN clients c ON i.client_id = c.id
+            LEFT JOIN invoice_lines il ON i.id = il.invoice_id
+            GROUP BY i.id, c.company_name
+        ");
+    
         return ResponseUtil::responseStandard(
             'success',
             [
@@ -198,7 +217,7 @@ class DashBoardApiController extends Controller
             ]
         );
     }
-    public function payements(){
+    public function payments(){
         $payements = Payment::all();
         return ResponseUtil::responseStandard(
             'success',
@@ -219,7 +238,7 @@ class DashBoardApiController extends Controller
         );
     }
     public function detailsSommePrixInvoices(){
-        $detailsSommePrixInvoices = InvoiceLine::whereNotNull('invoice_id')->get();
+        $detailsSommePrixInvoices = InvoiceLine::whereNotNull('invoice_id')->with('invoice')->get();
         return ResponseUtil::responseStandard(
             'success',
             [

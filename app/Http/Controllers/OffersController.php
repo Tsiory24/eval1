@@ -12,6 +12,7 @@ use App\Enums\InvoiceStatus;
 use App\Services\InvoiceNumber\InvoiceNumberService;
 use Illuminate\Http\Request;
 use App\Constantes\Constante;
+use App\Models\Setting;
 
 class OffersController extends Controller
 {
@@ -82,12 +83,15 @@ class OffersController extends Controller
         $invoice->offer_id = $offer->id;
         $invoice->invoice_number = app(InvoiceNumberService::class)->setNextInvoiceNumber();
         $invoice->status = InvoiceStatus::draft()->getStatus();
+        $settings = Setting::first();
+        $invoice->remise=$settings->remise;
         $invoice->save();
         
         $lines = $offer->invoiceLines;
         $newLines = collect();
         foreach($lines as $invoiceLine) {
             $invoiceLine->offer_id = null;
+            $invoiceLine->price = $invoiceLine->price*(1-$invoice->remise/100);
             $newLines->push(InvoiceLine::make($invoiceLine->toArray()));
         }
   
