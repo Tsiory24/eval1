@@ -17,7 +17,8 @@ class Offer extends Model
         'source_id',
         'source_type',
         'status',
-        'external_id'
+        'external_id',
+        'remise'
     ];
 
     public function getRouteKeyName()
@@ -46,4 +47,10 @@ class Offer extends Model
         $this->status = OfferStatus::lost()->getStatus();
         $this->save();
     }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+
 }

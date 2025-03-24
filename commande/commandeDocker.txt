@@ -31,3 +31,7 @@ php artisan migrate:fresh --seed && php artisan db:seed --class=DummyDatabaseSee
 
 
 php artisan make:controller ImportController
+
+php artisan make:migration add_remise_to_settings_table --table=settings
+php artisan make:migration add_remise_to_onvoices_table --table=invoices
+php artisan migrate
