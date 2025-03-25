@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
+    // public function sendForm()
+    // {
+    //     $types = ['payment', 'invoice'];
+    //     return view('pages.importCsv', compact('types'));
+    // }
+
     public function sendForm()
     {
         $types = ['payment', 'invoice'];

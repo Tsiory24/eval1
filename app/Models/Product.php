@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constantes\Constante;
 use App\Repositories\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,7 +24,7 @@ class Product extends Model
 
     public function getDividedPriceAttribute()
     {
-        return $this->price / 100;
+        return $this->price / Constante::MULTIPLY;
     }
     
 }

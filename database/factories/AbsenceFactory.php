@@ -6,16 +6,13 @@ use App\Models\Absence;
 use App\Models\User;
 use Faker\Generator as Faker;
 
-$factory->define(Absence::class, function (Faker $faker):array {
-    $value = \App\Enums\AbsenceReason::values();
-    $index = array_rand($value);
-    $reason=$value[$index];
+$factory->define(Absence::class, function (Faker $faker) {
+
     return [
         'external_id' => \Ramsey\Uuid\Uuid::uuid4()->toString(),
-        // 'reason' => $faker->word,
-        'reason' => $reason->getReason(),
+        'reason' => array_rand(\App\Enums\AbsenceReason::values()),
         'start_at' => now(),
         'end_at' => now()->addDays(3),
-        'user_id' => factory(User::class),
+        'user_id' => 1,
     ];
 });
