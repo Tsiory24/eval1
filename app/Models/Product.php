@@ -8,6 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    protected $table="products";
+    protected $fillable=[
+        'name',
+        'external_id',
+        'description',
+        'number ',
+        'default_type',
+        'archived',
+        'integration_type',
+        'integration_id',
+        'price'
+    ];
+    
     protected $appends = ['divided_price'];
     protected $hidden=['id'];
     
