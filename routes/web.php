@@ -9,6 +9,8 @@
 | to using a Closure or controller method. Build something great!
 |
 */
+
+use App\Http\Controllers\DataGenerationController;
 use App\Http\Controllers\ImportController;
 Route::auth();
 Route::get('/logout', 'Auth\LoginController@logout');
@@ -133,6 +135,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/first-steps', 'SettingsController@updateFirstStep')->name('settings.update.first_step');
         Route::get('/business-hours', 'SettingsController@businessHours')->name('settings.business_hours');
         Route::get('/date-formats', 'SettingsController@dateFormats')->name('settings.date_formats');
+        Route::get('/generateData', [DataGenerationController::class, 'generateData'])->name('data.generate');
+
     });
 
     /**
@@ -234,11 +238,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'reset'], function () {
         Route::get('/', 'ResetController@resetDatabase')->name('reset.data');
     });
-    Route::group(['prefix' => 'importCsv'], function () {
-        Route::get('/sendForm', [ImportController::class, 'sendForm'])->name('importCsv.sendForm');
-        Route::post('/upload', [ImportController::class, 'upload'])->name('importCsv.upload');
-    });
-    
+    Route::get('/csv/import', 'ImportCsvController@index')->name('csv.view');
+    Route::post('/csv/import', 'ImportCsvController@importData')->name('csv.process');
 });
 
 Route::group(['middleware' => ['auth']], function () {

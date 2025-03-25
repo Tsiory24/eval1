@@ -51,8 +51,6 @@
             <p class=" list-group-item siderbar-top" title=""><img src="{{url('images/daybyday-logo-white.png')}}" alt="" style="width: 100%; margin: 1em 0;"></p>
             <a href="{{route('dashboard')}}" class=" list-group-item" data-parent="#MainMenu"><i
                         class="fa fa-home sidebar-icon"></i><span id="menu-txt">{{ __('Dashboard') }} </span></a>
-            <a href="{{route('importCsv.sendForm')}}" class=" list-group-item" data-parent="#MainMenu"><i
-                class="fa fa-home sidebar-icon"></i><span id="menu-txt">{{ __('Import CSV') }} </span></a>
             <a href="{{route('reset.data')}}" class=" list-group-item" data-parent="#MainMenu"><i
                         class="fa fa-home sidebar-icon"></i><span id="menu-txt">{{ __('Reset Database') }} </span></a>
             <a href="{{route('users.show', \Auth::user()->external_id)}}" class=" list-group-item"
@@ -158,6 +156,19 @@
                    class="list-group-item childlist"> <i
                             class="bullet-point"><span></span></i> {{ __('Departments') }}</a>
             </div>
+            @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
+                <a href="#data" class="list-group-item" data-toggle="collapse" data-parent="#MainMenu">
+                    <i class="fa fa-upload sidebar-icon"></i>
+                    <span id="menu-txt">{{ __('Data') }}</span>
+                    <i class="icon ion-md-arrow-dropup arrow-side sidebar-arrow"></i>
+                </a>
+                <div class="collapse" id="data">
+                    <a href="{{ route('csv.view')}}"
+                       class="list-group-item childlist">
+                        <i class="bullet-point"><span></span></i> {{ __('Import Data') }}
+                    </a>
+                </div>
+            @endif
 
             @if(Entrust::hasRole('administrator') || Entrust::hasRole('owner'))
                 <a href="#settings" class=" list-group-item" data-toggle="collapse" data-parent="#MainMenu"><i

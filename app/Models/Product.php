@@ -2,11 +2,25 @@
 
 namespace App\Models;
 
+use App\Constantes\Constante;
 use App\Repositories\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    protected $table="products";
+    protected $fillable=[
+        'name',
+        'external_id',
+        'description',
+        'number ',
+        'default_type',
+        'archived',
+        'integration_type',
+        'integration_id',
+        'price'
+    ];
+    
     protected $appends = ['divided_price'];
     protected $hidden=['id'];
     
@@ -23,7 +37,7 @@ class Product extends Model
 
     public function getDividedPriceAttribute()
     {
-        return $this->price / 100;
+        return $this->price / Constante::MULTIPLY;
     }
     
 }
