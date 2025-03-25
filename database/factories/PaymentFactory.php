@@ -28,11 +28,13 @@ $factory->define(Payment::class, function (Faker $faker) {
         return [];
     }
 
+    $paymentDate = $faker->dateTimeBetween($invoice->created_at, Carbon::parse($invoice->created_at)->addMonths(8));
+
     return [
         'external_id' => $faker->uuid,
         'invoice_id' => $invoice->id,
         'amount' => $faker->randomFloat(2, 10, min($remainingAmount, $totalAmount / 2)),
-        'payment_date' => $faker->dateTimeBetween($invoice->sent_at, 'now + 2 years'),
+        'payment_date' => $paymentDate,
         'payment_source' => array_rand(\App\Enums\PaymentSource::values()),
     ];
 });
@@ -40,9 +42,11 @@ $factory->afterCreating(Payment::class, function ($payment, $faker) {
     $invoice = \App\Models\Invoice::find($payment->invoice_id);
 
     if(!$invoice->isSent()){
-        $invoice->sent_at =  Carbon::now();
-
+        $invoice->sent_at =  $invoice->created_at;
+        $invoice->due_at = Carbon::parse($invoice->created_at)->addYears(1);
+        $invoice->save();
     }
+
     if ($invoice) {
         $status = new GenerateInvoiceStatus($invoice);
         $status->createStatus();

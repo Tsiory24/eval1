@@ -19,11 +19,13 @@ $factory->define(Invoice::class, function (Faker $faker) {
 
     $lead = Lead::find($offer->source_id);
 
+    $createdAt = $faker->dateTimeBetween($offer->created_at, '2025-12-31');
+
     return [
         'external_id' => \Ramsey\Uuid\Uuid::uuid4()->toString(),
         'status' => 'unpaid',
         'sent_at' => null,
-        'due_at' => $faker->dateTimeBetween($lead->created_at, '+3 months'),
+        'due_at' => null,
         'client_id' => $offer->client_id,
         'integration_invoice_id' => \Ramsey\Uuid\Uuid::uuid4()->toString(),
         'integration_type' => 'external_system',
@@ -31,15 +33,16 @@ $factory->define(Invoice::class, function (Faker $faker) {
         'source_type' => Lead::class,
         'offer_id' => $offer->id,
         'remise' => 0.00,
-        'created_at' => $faker->dateTimeBetween($lead->created_at, 'now')
+        'created_at' => $createdAt
     ];
 });
+
 $factory->afterCreating(Invoice::class, function ($invoice, $faker) {
     $offer = Offer::find($invoice->offer_id);
 
     if ($offer) {
+        $offer->setAsWon();
         foreach ($offer->invoiceLines as $line) {
-            $offer->setAsWon();
             factory(InvoiceLine::class)->create([
                 'invoice_id' => $invoice->id,
                 'title' => $line->title,

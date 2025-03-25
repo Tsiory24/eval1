@@ -9,6 +9,10 @@ use Faker\Generator as Faker;
 
 $factory->define(Lead::class, function (Faker $faker) {
     $client = Client::inRandomOrder()->first();
+    $createdAt = $faker->dateTimeBetween('2023-01-01', '2025-12-31');
+    $updatedAt = $faker->dateTimeBetween($createdAt, '2025-12-31');
+    $deadline = $faker->dateTimeBetween($createdAt, '2025-12-31');
+
 
     return [
         'title' => $faker->sentence,
@@ -18,9 +22,9 @@ $factory->define(Lead::class, function (Faker $faker) {
         'user_assigned_id' => 1,
         'client_id' => $client->id,
         'status_id' => $faker->numberBetween(2, 7),
-        'deadline' => $faker->dateTimeThisYear('now'),
-        'created_at' => $faker->dateTimeThisYear('now'),
-        'updated_at' => $faker->dateTimeThisYear('now'),
+        'deadline' => $deadline,
+        'created_at' => $createdAt,
+        'updated_at' => $updatedAt,
     ];
 });
 

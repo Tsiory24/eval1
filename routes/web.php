@@ -238,11 +238,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'reset'], function () {
         Route::get('/', 'ResetController@resetDatabase')->name('reset.data');
     });
-    Route::group(['prefix' => 'importCsv'], function () {
-        Route::get('/sendForm', [ImportController::class, 'sendForm'])->name('importCsv.sendForm');
-        Route::post('/upload', [ImportController::class, 'upload'])->name('importCsv.upload');
-    });
-    
+    Route::get('/csv/import', 'ImportCsvController@index')->name('csv.view');
+    Route::post('/csv/import', 'ImportCsvController@importData')->name('csv.process');
 });
 
 Route::group(['middleware' => ['auth']], function () {
