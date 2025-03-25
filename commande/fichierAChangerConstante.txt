@@ -2,6 +2,6 @@ InvoicesController
 PaymentController
 OfferController
 Money.php dans repositories
-
+Product.php
 
 app.js il faut changer 100 en 1 ou inversement ligne 5629
